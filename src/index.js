@@ -1,3 +1,34 @@
+
+import { Router } from "@fastly/expressly";
+import Handlebars from "handlebars";
+const codes = require("./codes.json");
+
+const router = new Router();
+
+router.use((req, res) => {
+  res.headers.set("x-powered-by", "expressly");
+});
+
+var source = `<html lang="en">
+  <head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <meta
+      name="description"
+      content="An app for learning about status codes!"
+    />
+    <meta
+      name="og:description"
+      content="An app for learning about status codes!"
+    />
+    <meta property="og:title" content="HTTP Keanu ({{{status}}} {{{name}}})" />
+    <meta property="og:image" content="{{{img}}}" />
+
+    <title>HTTP Keanu ({{{status}}} {{{name}}})</title>
+
+    <style>
 /******************************************************************************
 START Glitch hello-app default styles
 
@@ -214,3 +245,122 @@ div [id^="code4"] {
 div [id^="code5"] {
   border-color:red;
 }
+  </style>
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="content" role="main">
+        <h1><a href="/">HTTP Keanu</a></h1>
+
+        <p class="intro">
+          A fun way to learn about status codes, inspired by
+          <a href="https://http.cat">http.cat</a>!
+        </p>
+        <p class="random">
+          🎲
+          <a href="?code=-1">Choose a random code</a>
+        </p>
+
+        <div class="codes">
+          {{#if selected}}
+            <div class="highlight selected" id="code{{{code}}}">
+
+              <h2>{{code}}</h2>
+              <h3>{{name}}</h3>
+              <div class="imghold">
+                <img src="{{pic}}" alt="{{alt}}" />
+              </div>
+
+              <div class="extra">
+                <p>{{info}}</p>
+                {{#if joker}}
+                  <a
+                    href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/"
+                  >HTTP status codes on MDN</a>
+                {{else}}
+                  <a
+                    href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{{{code}}}"
+                  >{{code}} on MDN</a>
+                {{/if}}
+              </div>
+            </div>
+          {{else}}
+            {{#each list}}
+              <div class="code" id="code{{{code}}}">
+
+                <h2>{{code}}</h2>
+                <h3>{{name}}</h3>
+                <div class="imghold">
+                  <a href="?code={{{code}}}"><img
+                      src="{{pic}}"
+                      alt="{{alt}}" 
+                    /></a>
+                </div>
+              </div>
+            {{/each}}
+          {{/if}}
+        </div>
+        <p id="bonus">
+          Bonus: try selecting an invalid code, like
+          <a href="?code=1000">1000</a>
+        </p>
+      </div>
+      <footer class="footer">
+        <a
+          class="btn--remix"
+          target="_top"
+          href="https://github.com/SueSmith/keanu-codes"
+        >
+          🚧 Fork on GitHub
+        </a>
+      </footer>
+    </div>
+
+  </body>
+</html>`;
+let template = Handlebars.compile(source);
+
+router.get("/", async (req, res) => {
+  let params = {};
+
+  if (req.query.get('code') == undefined) {
+    params = codes;
+    params.img =
+      "https://cdn.glitch.global/b8209f22-6edd-46cc-8707-e2d42e09b6e7/thankeanu.jpg?v=1702506252169";
+    params.status = "";
+  } else {
+    params.selected = true;
+    let found;
+    if (req.query.get('code') < 0) {
+      found = codes.list[Math.floor(Math.random() * codes.list.length)];
+      res.headers.set("Surrogate-Control", "max-age=0");
+    } else
+      found = codes.list.find((element) => element.code == req.query.get('code'));
+    if (found) {
+      params.code = found.code;
+      params.name = found.name;
+      params.pic = found.pic;
+      params.info = found.info;
+      params.alt = found.alt;
+      params.img = found.pic;
+      params.status = found.code;
+    } else {
+      params.joker = true;
+      params.code = 0;
+      params.name = "WELP";
+      params.pic =
+        "https://cdn.glitch.global/b8209f22-6edd-46cc-8707-e2d42e09b6e7/keanu.jpg?v=1702505475354";
+      params.info = "Whoops! This one isn't on the list.";
+      params.alt = "Keanu holding his hands up";
+      params.img = params.pic;
+      params.status = 0;
+    }
+  }
+  let data = params;
+  let result = template(data);
+
+  return res.html(result);
+});
+
+router.listen();
