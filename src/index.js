@@ -259,7 +259,7 @@ div [id^="code5"] {
         </p>
         <p class="random">
           🎲
-          <a href="?code=-1">Choose a random code</a>
+          <a href="/?code=-1">Choose a random code</a>
         </p>
 
         <div class="codes">
@@ -327,7 +327,7 @@ router.get("/", async (req, res) => {
   if (req.query.get('code') == undefined) {
     params = codes;
     params.img =
-      "https://cdn.glitch.global/b8209f22-6edd-46cc-8707-e2d42e09b6e7/thankeanu.jpg?v=1702506252169";
+      "https://keanustatus.edgecompute.app/thankeanu.jpg";
     params.status = "";
   } else {
     params.selected = true;
@@ -350,13 +350,32 @@ router.get("/", async (req, res) => {
       params.code = 0;
       params.name = "WELP";
       params.pic =
-        "https://cdn.glitch.global/b8209f22-6edd-46cc-8707-e2d42e09b6e7/keanu.jpg?v=1702505475354";
+        "https://keanustatus.edgecompute.app/thankeanu.jpg";
       params.info = "Whoops! This one isn't on the list.";
       params.alt = "Keanu holding his hands up";
       params.img = params.pic;
       params.status = 0;
     }
   }
+  let data = params;
+  let result = template(data);
+
+  return res.html(result);
+});
+
+router.use((err, req, res) => {
+  let params = {};
+  params.selected = true;
+  params.joker = true;
+  params.code = 0;
+  params.name = "WELP";
+  params.pic =
+    "https://keanustatus.edgecompute.app/thankeanu.jpg";
+  params.info = "Whoops! This one isn't on the list.";
+  params.alt = "Keanu holding his hands up";
+  params.img = params.pic;
+  params.status = 0;
+  console.error(err);
   let data = params;
   let result = template(data);
 
