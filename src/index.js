@@ -327,7 +327,7 @@ router.get("/", async (req, res) => {
   if (req.query.get('code') == undefined) {
     params = codes;
     params.img =
-      "https://cdn.glitch.global/b8209f22-6edd-46cc-8707-e2d42e09b6e7/thankeanu.jpg?v=1702506252169";
+      "https://keanustatus.edgecompute.app/thankeanu.jpg";
     params.status = "";
   } else {
     params.selected = true;
@@ -350,7 +350,7 @@ router.get("/", async (req, res) => {
       params.code = 0;
       params.name = "WELP";
       params.pic =
-        "https://cdn.glitch.global/b8209f22-6edd-46cc-8707-e2d42e09b6e7/keanu.jpg?v=1702505475354";
+        "https://keanustatus.edgecompute.app/keanu.jpg";
       params.info = "Whoops! This one isn't on the list.";
       params.alt = "Keanu holding his hands up";
       params.img = params.pic;
