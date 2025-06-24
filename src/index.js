@@ -259,7 +259,7 @@ div [id^="code5"] {
         </p>
         <p class="random">
           🎲
-          <a href="?code=-1">Choose a random code</a>
+          <a href="/?code=-1">Choose a random code</a>
         </p>
 
         <div class="codes">
@@ -357,6 +357,25 @@ router.get("/", async (req, res) => {
       params.status = 0;
     }
   }
+  let data = params;
+  let result = template(data);
+
+  return res.html(result);
+});
+
+router.use((err, req, res) => {
+  let params = {};
+  params.selected = true;
+  params.joker = true;
+  params.code = 0;
+  params.name = "WELP";
+  params.pic =
+    "https://keanustatus.edgecompute.app/thankeanu.jpg";
+  params.info = "Whoops! This one isn't on the list.";
+  params.alt = "Keanu holding his hands up";
+  params.img = params.pic;
+  params.status = 0;
+  console.error(err);
   let data = params;
   let result = template(data);
 
